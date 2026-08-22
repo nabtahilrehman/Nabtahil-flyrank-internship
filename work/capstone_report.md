@@ -1,288 +1,241 @@
-Search Opportunity Prioritization Using Historical Search Performance Signals
-Abstract
+Capstone Report — Search Opportunity Prioritization
 
-This project investigates whether historical search performance signals can be used to identify pages that may represent SEO optimization opportunities. Using the FlyRank ML Internship dataset, search performance observations including impressions, clicks, average position, and engagement-related metrics were examined. A rule-based opportunity prioritization framework and a machine learning workflow were explored to support content review decisions. Particular attention was given to data contracts, leakage prevention, validation design, and responsible interpretation of model outputs. The resulting framework is intended as a decision-support tool that helps prioritize pages for review rather than automate SEO decisions.
+Author: Nabtahil Rehman
+ Lane: Refresh & Content Opportunity Scoring
+ Repo: https://github.com/nabtahilrehman/Nabtahil-flyrank-internship
+ Date: August 2026
 
-Introduction
+0. Abstract
 
-Large websites often contain thousands of indexed pages, making manual SEO analysis difficult and time-consuming. Teams responsible for SEO and content optimization must determine which pages deserve attention first while working with limited resources.
+This project investigates whether historical search-performance signals can be used to prioritize pages that may represent SEO opportunities. The analysis uses the FlyRank ML Internship dataset, including impressions, clicks, average position, sessions, and pageviews from anonymized search-performance records. A transparent rule-based opportunity score was developed first and then compared with a machine-learning workflow designed to support prioritization decisions. Special attention was given to data contracts, leakage prevention, validation design, and responsible interpretation of outputs. The resulting framework provides a ranked, reason-coded recommendation system intended for human review and decision support rather than automated decision-making.
 
-Traditional workflows often involve manually reviewing reports and identifying optimization opportunities through expert judgement. While valuable, this approach can become difficult to scale as websites grow.
+1. Problem Framing
 
-This project explores whether historical search performance data can support a structured content-prioritization process. The objective is to identify pages that may represent SEO opportunities based on observed performance patterns.
+This project supports the decision of which content pages should be reviewed first for potential SEO improvement.
 
-The goal is not to predict Google's ranking algorithms or guarantee future performance improvements. Instead, the project aims to provide a consistent and data-informed framework for prioritizing content review activities.
+Unit of Analysis
 
-Research Question
-Primary Research Question
+One content page on a specific reporting date.
 
-Can historical search performance signals be used to prioritize pages that may represent SEO opportunities?
+Output
 
-Decision Supported
+A ranked opportunity score and associated reason codes.
 
-Which pages should be reviewed first for potential SEO improvement?
+Human Action
 
-Intended Action
+SEO analysts review high-priority pages before allocating effort to lower-priority content.
 
-SEO analysts and content managers can review high-priority pages before investing resources in lower-priority content.
+Cost of a Wrong Recommendation
 
-Cost Of A Wrong Recommendation
+A poor recommendation may:
 
-Incorrect recommendations may result in:
+Waste optimization resources.
+Delay review of higher-value opportunities.
+Reduce efficiency of SEO workflows.
+Why ML Helps
 
-Time spent reviewing pages with limited opportunity
-Missed opportunities on higher-value pages
-Reduced efficiency of optimization efforts
-Dataset
-Dataset Source
+Search performance is influenced by multiple interacting signals such as impressions, clicks, rankings, and engagement. Machine learning provides a structured way to combine these signals and support prioritization decisions.
 
-FlyRank ML Internship Warehouse Dataset
+2. Data Safety
+Dataset Used
 
-Tables Reviewed
+FlyRank ML Internship Warehouse Dataset.
+
+Tables Referenced
 fact_content_daily_performance
-dim_clients
 dim_content
+dim_clients
 Time Window
 
-The analysis focused primarily on warehouse data available during the internship exercises, including the March 2026 partition used for exploratory analysis and validation activities.
+March 2026 warehouse partition.
 
-Unit Of Analysis
+Features Considered
+gsc_impressions
+gsc_clicks
+gsc_avg_position
+ga4_pageviews
+ga4_sessions
+Excluded Information
 
-One row represents:
+The following were intentionally excluded:
 
-One content item for one client on one report date.
+client identifiers
+content identifiers
+future observations
+unavailable observations
+label-derived variables
+Leakage Risks Considered
 
-Dataset Grain
+Potential leakage sources included:
 
-The grain was verified as:
+target-derived variables
+future-window information
+identifiers
+post-decision data
+
+No client-identifying information appears anywhere in the project artifacts.
+
+3. Baseline
+
+A transparent opportunity score was created before considering more advanced approaches.
+
+Baseline Logic
+
+Pages with:
+
+high impressions
+low click-through rates
+measurable visibility
+
+were treated as stronger optimization opportunities.
+
+Example Rule
+Plain Text
+1
+Opportunity Score =
+2
+Impressions × (1 − CTR)
+Show more lines
+
+where:
 
 Plain Text
 1
-(report_date,
-2
-client_hash_id,
-3
-content_hash_id)
+CTR = Clicks ÷ Impressions
 Show more lines
+Why It Is Fair
 
-Duplicate checks were performed to confirm the expected structure.
+The baseline uses only observable information available at recommendation time.
 
-Excluded Information
+The baseline provides an interpretable comparison against any machine-learning workflow.
 
-The following were excluded from predictive use:
+4. Model / Analysis
 
-Client identifiers
-Content identifiers
-Future observations
-Label-derived variables
-Unavailable observations
+A machine-learning workflow was explored to determine whether observed search-performance signals could support content-prioritization decisions.
 
-All analysis used anonymized data and public-safe reporting practices.
+Method
 
-Methodology
-Feature Selection
+Random Forest was selected as an illustrative model because it can capture nonlinear relationships among search-performance variables.
 
-The project examined several historical search-performance signals, including:
+Features Used
+gsc_impressions
+gsc_clicks
+gsc_avg_position
+ga4_pageviews
+ga4_sessions
+Features Excluded
+client identifiers
+content identifiers
+future observations
+label-derived variables
+Target
 
-Google Search Console impressions
-Google Search Console clicks
-Average search position
-Pageviews
-Sessions
+The target is a search-opportunity prioritization score intended to support ranking and review decisions.
 
-These variables are available before content review decisions are made and therefore support decision-time recommendations.
-
-Baseline Opportunity Framework
-
-A rule-based prioritization approach was created using observed search performance.
-
-Pages receiving relatively high visibility but limited click activity were ranked higher because they may represent optimization opportunities.
-
-Example reasoning included:
-High impression + Low click-through rate = Potential optimization opportunity
-
-Machine Learning Exploration
-
-A machine learning workflow was explored as part of the internship exercises.
-
-The purpose was not to create a production system but to understand:
-
-Feature selection
-Data contracts
-Leakage prevention
-Validation strategies
-Model interpretation
-
-Random Forest was selected as an example modeling approach because it can capture nonlinear relationships between search-performance features.
-
+5. Evaluation
 Validation Design
 
-Special attention was given to validation design.
+A validation-focused workflow was used during the internship exercises.
 
-Where applicable, time-aware evaluation strategies were preferred over simple random splits because future information should not influence training data.
+Time-aware evaluation approaches were preferred whenever possible to reduce information leakage.
 
-The emphasis of the project was placed on honest evaluation rather than maximizing reported performance.
+Error Analysis
 
-Validation And Leakage Audit
-Research Paper Reflection
+Potential errors include:
 
-As part of the validation audit exercise, findings from the FlyRank research paper were reviewed from a methodological perspective.
+pages affected by temporary search-demand changes
+pages influenced by external ranking factors
+pages where CTR is affected by SERP features
+Honest Interpretation
 
-Finding 1
+The framework should be treated as a prioritization system rather than a prediction of future SEO success.
 
-Machine learning may improve prioritization compared with simple rules.
+All findings represent observed and measured relationships.
 
-Methodology Question
+6. Interpretation
 
-How is the target label defined, and does the label remain independent from future information?
+Several observations emerged from the analysis.
 
-Finding 2
+Key Findings
+Search visibility is an important prioritization signal.
+Pages with high impressions and limited click performance may warrant additional review.
+Multiple search-performance signals provide more context than any individual metric.
+Surprises
 
-Multiple signals may outperform individual metrics.
+Some pages receiving substantial impressions showed limited engagement despite strong visibility.
 
-Methodology Question
+Negative Result
 
-Does the validation design provide sufficient evidence for the reported claim across different clients and periods?
+Visibility alone does not guarantee that a page represents an optimization opportunity.
 
-Leakage Audit
-
-The final feature set was reviewed to identify potential leakage risks.
-
-The review checked for:
-
-Future observations
-Label-derived variables
-Identifier leakage
-Post-decision information
-
-Excluded variables were removed from consideration whenever they could not reasonably be known at recommendation time.
-
-This process helps maintain the integrity of model evaluation.
-
-Results
-
-The project successfully demonstrated a complete workflow for transforming raw search-performance observations into a prioritized review framework.
-
-The internship exercises showed how:
-
-Search-performance data can be structured
-Data contracts can be verified
-Features can be evaluated
-Leakage can be identified
-Validation designs can be improved
-Recommendations can be generated responsibly
-
-The resulting prioritization framework provides a repeatable process for identifying pages that may deserve additional investigation.
-
-Because the emphasis of this work was educational and methodological, the focus remains on transparent evaluation and interpretation rather than reporting a production-ready optimization score.
-
-Content Action Playbook
+7. Recommendation
 Primary Recommendation
 
-Identify pages that receive substantial visibility but relatively weak click performance.
+Prioritize pages receiving:
 
-These pages may warrant additional review because user interest appears higher than observed engagement.
-
+high impressions
+lower relative CTR
+measurable search visibility
 Reason Codes
 HIGH_IMPRESSIONS_LOW_CTR
 
-The page receives search visibility but comparatively fewer clicks.
+The page receives visibility but comparatively limited clicks.
 
 HIGH_VISIBILITY_UNDERPERFORMING
 
-The page appears regularly in search results but generates limited engagement.
+The page appears frequently in search results but engagement is lower than expected.
 
 POSITION_WITH_OPPORTUNITY
 
-The page demonstrates measurable visibility and may benefit from additional optimization.
+The page demonstrates visibility and may benefit from optimization review.
 
-Human Review Requirements
+Confidence
 
-Recommendations should always be reviewed by a human analyst before action is taken.
+Moderate.
 
-Suggested review process:
+Limits
 
-Check search intent alignment
-Review content quality
-Verify business relevance
-Consider recent content updates
-Evaluate current ranking context
-No-Go List
+Recommendations should be treated as decision-support rather than guarantees of future improvement.
 
-The following actions should never be automated solely on the basis of model output:
+Human review remains essential.
 
-Publishing content changes
-Deleting content
-Redirecting pages
-Changing site architecture
-Making business decisions without review
-
-The framework is intended to support human judgement rather than replace it.
-
-Monitoring And Retraining
-
-The recommendation framework should be revisited periodically.
-
-Potential monitoring signals include:
-
-Changes in search demand
-Declining recommendation usefulness
-Shifting feature distributions
-Significant ranking volatility
-
-Retraining or reevaluation may be appropriate when new data becomes available or when observed search patterns change substantially.
-
-Limitations And Honest Framing
-
-Several limitations should be considered.
-
-The dataset contains observational search-performance data rather than experimental evidence.
-
-The project cannot determine:
-
-Causation
-Content quality
-Future ranking behavior
-Competitor actions
-Future search demand
-
-The framework should therefore be interpreted as:
-
-Observed
-Measured
-Directional
-Decision-support
-
-rather than predictive certainty.
-
-Recommendations indicate potential opportunities for review, not guaranteed outcomes.
-
-Reproducibility
+8. Reproducibility
 Repository
 
-https://github.com/nabtahilrehman/Nabtahil-flyrank-internship 
+https://github.com/nabtahilrehman/Nabtahil-flyrank-internship
 
-Project Artifacts
+Project Components
+Research Question Notebook
+Data Contract Notebook
+Signal Audit Notebook
+Baseline Scoring Notebook
+Validation Audit Notebook
+Action Playbook Notebook
+Environment
 
-The workflow is documented through the internship notebooks, including:
+Primary libraries:
 
-Research question development
-Data contract verification
-Signal audit
-Baseline scoring
-Modeling workflow
-Validation audit
-Action playbook creation
+pandas
+numpy
+scikit-learn
+duckdb
+Reproduction Steps
+Clone the repository.
+Install project dependencies.
+Run notebooks in sequence.
+Generate the ranked opportunity queue.
+Review exported artifacts in work/outputs/.
 
-These artifacts provide traceability from raw observations to final recommendations.
+Random seeds and notebook outputs are documented in the project notebooks.
 
-Acknowledgments And Data Credit
+9. Acknowledgments & Data Credit
 
 This project was completed as part of the FlyRank Machine Learning Internship.
 
 Built on the FlyRank ML Internship Dataset.
 
 Data Credit:
-  https://flyrank.ai
 
-The author acknowledges FlyRank for providing the anonymized search-performance warehouse used for educational and research purposes.
+https://flyrank.ai/
+
+The author acknowledges FlyRank for providing anonymized search-performance data for educational and research purposes.
