@@ -1,8 +1,11 @@
 Capstone Report — Search Opportunity Prioritization
 
 Author: Nabtahil Rehman
+
  Lane: Refresh & Content Opportunity Scoring
+ 
  Repo: https://github.com/nabtahilrehman/Nabtahil-flyrank-internship
+ 
  Date: August 2026
 
 0. Abstract
